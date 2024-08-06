@@ -33,7 +33,7 @@ const parser = (str: string) => {
 const client = new Bot(process.env.TOKEN);
 
 client.command("gemini", async ctx => {
-	if (ctx.chatId !== -1001705068191) return;
+	if (![654382771, 946070039].includes(ctx.chatId)) return;
 	const args = ctx.msg.text.split(/\s+/).slice(1);
 	if (!args.length) return ctx.reply("Не удалось найти запрос...");
 
@@ -59,4 +59,4 @@ client.command("gemini", async ctx => {
 		});
 });
 
-client.start({ drop_pending_updates: true });
+client.start({ drop_pending_updates: true, onStart: () => console.log("Bot started!") });
