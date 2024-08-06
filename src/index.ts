@@ -40,7 +40,6 @@ client.command("gemini", async ctx => {
 	const msg = await ctx.reply("Подождите, ответ генерируется...", { reply_parameters: { message_id: ctx.msgId } });
 	await ctx.replyWithChatAction("typing");
 
-	const prompt = ctx.msg.text;
 	const result = await model.generateContent(args.join(" "));
 	const response = result.response;
 	const text = response.text();
