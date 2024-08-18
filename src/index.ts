@@ -9,23 +9,26 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 const parser = (str: string) => {
-	str.replace(/<[^>]+>/gm, val => val.replace(/</g, "&lt;").replace(/>/g, "&gt;"));
+	str = str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-	if (str.match(/^```(.*)\n([\s\S]*?)```$/gm)) {
-		const language = str.split(/\s+/)[0]!.slice(3);
+	str = str.replace(/```(.*)\n([\s\S]*?)```/gm, val => {
+		const language = val.split(/\s+/)[0]!.slice(3).replace("c#", "csharp").replace("c++", "cpp");
 
-		str = str.replace(
-			/^```(.*)\n([\s\S]*?)```$/gm,
-			`<pre><code class="language-${language.replace("c#", "csharp").replace("c++", "cpp")}">${str.slice(
-				3 + language.replace("c#", "csharp").replace("c++", "cpp").length,
-				str.length - 3
-			)}</code></pre>`
+		val = val.replace(
+			/```(.*)\n([\s\S]*?)```/gm,
+			`<pre><code class="language-${language}">${val.slice(3 + language.length + 1, val.length - 4)}</code></pre>`
 		);
-	}
+
+		return val;
+	});
 
 	return str
-		.replace(/^\*\s.*$/gm, val => `<b> • </b>${val.slice(2)}`)
-		.replace(/\`[^`].*\`/gm, val => `<code>${val.slice(1, val.length - 1)}</code>`)
+		.replace(/^(\s+|)\*(\s+)(.*)*$/gm, val => {
+			val = val.replace("*", `<b>${val.indexOf("*") <= 1 ? " " : ""}•</b>`);
+
+			return val;
+		})
+		.replace(/`([\s\S]*?)`/gm, val => `<code>${val.slice(1, val.length - 1)}</code>`)
 		.replace(/\*\*(.*)\*\*/gm, "<b>$1</b>")
 		.replace(/\*(.*)\*/gm, "<b>$1</b>");
 };
@@ -43,9 +46,13 @@ client.command("gemini", async ctx => {
 	const result = await model.generateContent(args.join(" "));
 	const response = result.response;
 	const text = response.text();
+	const str = parser(text).slice(0, 4096);
+	console.log(str);
+
+	// console.log(args.join(" "), text, parser(text));
 
 	await ctx.api
-		.editMessageText(msg.chat.id, msg.message_id, parser(text).slice(0, 4096), {
+		.editMessageText(msg.chat.id, msg.message_id, str, {
 			parse_mode: "HTML",
 		})
 		.catch(err => {
