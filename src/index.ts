@@ -6,7 +6,7 @@ import { resolve } from "path";
 config({ path: resolve(process.cwd(), ".env") });
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
 const parser = (str: string) => {
 	str = str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
