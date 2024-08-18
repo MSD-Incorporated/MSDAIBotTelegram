@@ -47,9 +47,6 @@ client.command("gemini", async ctx => {
 	const response = result.response;
 	const text = response.text();
 	const str = parser(text).slice(0, 4096);
-	console.log(str);
-
-	// console.log(args.join(" "), text, parser(text));
 
 	await ctx.api
 		.editMessageText(msg.chat.id, msg.message_id, str, {
