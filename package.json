@@ -2,7 +2,7 @@
 	"name": "msd_ai_telegram_bot",
 	"main": "./dist/index.js",
 	"module": "./src/index.ts",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"license": "MIT",
 	"scripts": {
 		"start": "node .",

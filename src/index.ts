@@ -39,10 +39,10 @@ const client = new Bot(process.env.TOKEN);
 client.command("start", async ctx => {
 	return ctx.reply(
 		[
-			"Добро пожаловать!",
+			"Добро пожаловать! \n",
 			"Чтобы задать свой вопрос используйте: /gemini <code>[текст запроса]<code>",
-			"Пример: /gemini Привет, как дела?",
-			"Версия gemini: <code>gemini-1.5-pro</code> \n",
+			"Пример: /gemini Привет, как дела? \n",
+			"Версия gemini: <code>gemini-1.5-pro</code>",
 			`Текущий билд: <code>${version}</code>`,
 		].join("\n"),
 		{
