@@ -40,7 +40,7 @@ client.command("start", async ctx => {
 	return ctx.reply(
 		[
 			"Добро пожаловать! \n",
-			"Чтобы задать свой вопрос используйте: /gemini <code>[текст запроса]<code>",
+			"Чтобы задать свой вопрос используйте: /gemini <code>[текст запроса]</code>",
 			"Пример: /gemini Привет, как дела? \n",
 			"Версия gemini: <code>gemini-1.5-pro</code>",
 			`Текущий билд: <code>${version}</code>`,
