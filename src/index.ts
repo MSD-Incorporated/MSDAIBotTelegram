@@ -1,12 +1,13 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { config } from "dotenv";
-import { Bot } from "grammy";
+import { Bot, InlineKeyboard } from "grammy";
 import { resolve } from "path";
 
 config({ path: resolve(process.cwd(), ".env") });
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+const version = process.env.npm_package_version;
 
 const parser = (str: string) => {
 	str = str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -35,6 +36,25 @@ const parser = (str: string) => {
 
 const client = new Bot(process.env.TOKEN);
 
+client.command("start", async ctx => {
+	return ctx.reply(
+		[
+			"Добро пожаловать!",
+			"Чтобы задать свой вопрос используйте: /gemini [текст запроса]",
+			"Пример: /gemini Привет, как дела?",
+			"Версия gemini: gemini-1.5-pro \n",
+			`Текущий билд: <code>${version}</code>`,
+		].join("\n"),
+		{
+			parse_mode: "HTML",
+			reply_markup: new InlineKeyboard().add({
+				text: "🔗 • Github",
+				url: "https://github.com/MSD-Incorporated/MSDAIBotTelegram",
+			}),
+		}
+	);
+});
+
 client.command("gemini", async ctx => {
 	if (![654382771, 946070039, 825720828, 629401289, -1001705068191].includes(ctx.chatId)) return;
 	const args = ctx.msg.text.split(/\s+/).slice(1);
@@ -48,7 +68,7 @@ client.command("gemini", async ctx => {
 	const text = response.text();
 	const str = parser(text).slice(0, 4096);
 
-	await ctx.api
+	return ctx.api
 		.editMessageText(msg.chat.id, msg.message_id, str, {
 			parse_mode: "HTML",
 		})
