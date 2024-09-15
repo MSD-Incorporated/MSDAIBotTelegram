@@ -32,6 +32,7 @@ const parser = (str: string) => {
 
 			return val;
 		})
+		.replace(/\#\#(.*)/gm, val => `<b>${val.slice(3)}</b>`)
 		.replace(/`([\s\S]*?)`/gm, val => `<code>${val.slice(1, val.length - 1)}</code>`)
 		.replace(/\*\*(.*)\*\*/gm, "<b>$1</b>")
 		.replace(/\*(.*)\*/gm, "<b>$1</b>");
