@@ -60,7 +60,7 @@ client.command("start", async ctx => {
 });
 
 client.command("gemini", async ctx => {
-	if (![654382771, 946070039, 825720828, 629401289, -1001705068191].includes(ctx.chatId)) return;
+	if (![654382771, 946070039, 825720828, 629401289, -1001705068191, -1002229012209].includes(ctx.chatId)) return;
 	const args = ctx.msg.text.split(/\s+/).slice(1);
 	if (!args.length) return ctx.reply("Не удалось найти запрос...");
 
