@@ -71,7 +71,7 @@ client.command("gemini", async ctx => {
 	return ctx
 		.reply("Подождите, ответ генерируется...", { reply_parameters: { message_id: ctx.msgId } })
 		.then(async ({ chat, message_id }) => {
-			context[ctx.from!.id] = [];
+			if (!context[ctx.from!.id]) context[ctx.from!.id] = [];
 			const GPTchat = model.startChat({ history: context[ctx.from!.id] });
 
 			GPTchat.sendMessage(args.join(" "))
