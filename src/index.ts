@@ -9,7 +9,9 @@ config({ path: resolve(process.cwd(), ".env") });
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 const version = process.env.npm_package_version;
-const channelIDs: number[] = [654382771, 946070039, 825720828, 629401289, -1001705068191, -1002229012209];
+const channelIDs: number[] = [
+	654382771, 946070039, 825720828, 629401289, -1001705068191, -1002229012209, -1001765200223,
+];
 
 const onStart = ({ id, username }: UserFromGetMe) => console.log(`${username} [${id}] started!`);
 
@@ -69,7 +71,20 @@ client.command("gemini", async ctx => {
 
 	await ctx.replyWithChatAction("typing");
 	return ctx
-		.reply("Подождите, ответ генерируется...", { reply_parameters: { message_id: ctx.msgId } })
+		.reply("Подождите, ответ генерируется...", {
+			reply_parameters: { message_id: ctx.msgId },
+			message_thread_id: ctx.message?.message_thread_id,
+			reply_markup: {
+				inline_keyboard: [
+					[
+						{
+							text: "Очистить контекст",
+							callback_data: `clear_context_${ctx.from!.id}`,
+						},
+					],
+				],
+			},
+		})
 		.then(async ({ chat, message_id }) => {
 			if (!context[ctx.from!.id]) context[ctx.from!.id] = [];
 			const GPTchat = model.startChat({ history: context[ctx.from!.id] });
