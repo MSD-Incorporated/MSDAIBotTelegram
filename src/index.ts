@@ -117,7 +117,7 @@ client.command("gemini", async ctx => {
 });
 
 client.callbackQuery(/clear_context_(\d+)/gm, async ctx => {
-	const id = Number(ctx.match![1]);
+	const id = Number(ctx.callbackQuery.data.slice("clear_context_".length));
 	if (ctx.callbackQuery.from.id !== id) return;
 
 	context[id] = [];
