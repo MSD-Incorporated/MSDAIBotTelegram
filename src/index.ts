@@ -60,6 +60,8 @@ client.command("start", async ctx => {
 	);
 });
 
+const context: Record<number, { role: "model" | "user"; parts: { text: string }[] }[]> = {};
+
 client.command("gemini", async ctx => {
 	if (!channelIDs.includes(ctx.chatId)) return;
 	const args = ctx.msg.text.split(/\s+/).slice(1);
@@ -69,20 +71,40 @@ client.command("gemini", async ctx => {
 	return ctx
 		.reply("Подождите, ответ генерируется...", { reply_parameters: { message_id: ctx.msgId } })
 		.then(async ({ chat, message_id }) => {
-			await model
-				.generateContent(args.join(" "))
-				.then(({ response }) => {
+			context[ctx.from!.id] = [];
+			const GPTchat = model.startChat({ history: context[ctx.from!.id] });
+
+			GPTchat.sendMessage(args.join(" "))
+				.then(async ({ response }) => {
 					const text = response.text();
 					const str = parser(text).slice(0, 4096);
 
-					return ctx.api.editMessageText(chat.id, message_id, str, { parse_mode: "HTML" }).catch(err => {
-						ctx.api.editMessageText(
-							chat.id,
-							message_id,
-							"Произошла неизвестная ошибка. Возможно потому что ответ нейросети был больше, чем лимиты на длину сообщения в Telegram"
-						);
-						console.error(err);
-					});
+					context[ctx.from!.id]!.push({ role: "user", parts: [{ text: args.join(" ") }] });
+					context[ctx.from!.id]!.push({ role: "model", parts: [{ text }] });
+					context[ctx.from!.id]!.slice(context[ctx.from!.id]!.length - 10, context[ctx.from!.id]!.length);
+
+					return ctx.api
+						.editMessageText(chat.id, message_id, str, {
+							parse_mode: "HTML",
+							reply_markup: {
+								inline_keyboard: [
+									[
+										{
+											text: "Очистить контекст",
+											callback_data: `clear_context_${ctx.from!.id}`,
+										},
+									],
+								],
+							},
+						})
+						.catch(err => {
+							ctx.api.editMessageText(
+								chat.id,
+								message_id,
+								"Произошла неизвестная ошибка. Возможно потому что ответ нейросети был больше, чем лимиты на длину сообщения в Telegram"
+							);
+							console.error(err);
+						});
 				})
 				.catch(err => {
 					ctx.api.editMessageText(chat.id, message_id, "Произошла неизвестная ошибка");
@@ -92,6 +114,15 @@ client.command("gemini", async ctx => {
 		.catch(err => {
 			console.error(err);
 		});
+});
+
+client.callbackQuery(/clear_context_(\d+)/gm, async ctx => {
+	const id = Number(ctx.match![1]);
+	if (ctx.callbackQuery.from.id !== id) return;
+
+	context[id] = [];
+	await ctx.answerCallbackQuery({ text: "Контекст успешно очищен!" });
+	await ctx.editMessageReplyMarkup({ reply_markup: { inline_keyboard: [] } });
 });
 
 client.start({ drop_pending_updates: true, onStart });
