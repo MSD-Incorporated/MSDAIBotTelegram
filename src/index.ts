@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { config } from "dotenv";
 import { Bot, InlineKeyboard } from "grammy";
-import type { UserFromGetMe } from "grammy/types";
+import type { Message, UserFromGetMe } from "grammy/types";
 import { resolve } from "path";
 
 config({ path: resolve(process.cwd(), ".env") });
@@ -138,6 +138,22 @@ client.callbackQuery(/clear_context_(\d+)/gm, async ctx => {
 	context[id] = [];
 	await ctx.answerCallbackQuery({ text: "Контекст успешно очищен!" });
 	await ctx.editMessageReplyMarkup({ reply_markup: { inline_keyboard: [] } });
+});
+
+const chatChannelID = -1002229012209;
+
+client.on(":photo").on(":is_automatic_forward", async ctx => {
+	if (chatChannelID !== (ctx.message?.forward_origin! as Message).chat.id) return;
+
+	const {
+		response: { text },
+	} = await model.generateContent(
+		[`Опиши пожалуйста только своё мнение насчёт данного поста и ни слова больше.`, ctx.message!.text].join(" ")
+	);
+
+	if (!text().toLowerCase().includes("мое мнение")) return;
+
+	return ctx.reply(parser(text().slice(0, 4096)), { parse_mode: "HTML" });
 });
 
 client.start({ drop_pending_updates: true, onStart });
