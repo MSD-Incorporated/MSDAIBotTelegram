@@ -53,6 +53,8 @@ client.command("start", async ctx => {
 			`Текущий билд: <code>${version}</code>`,
 		].join("\n"),
 		{
+			reply_parameters: { message_id: ctx.msgId },
+			message_thread_id: ctx.message?.message_thread_id,
 			parse_mode: "HTML",
 			reply_markup: new InlineKeyboard().add({
 				text: "🔗 • Github",
