@@ -44,6 +44,8 @@ const parser = (str: string) => {
 const client = new Bot(process.env.TOKEN);
 
 client.command("start", async ctx => {
+	console.log(ctx.message);
+
 	return ctx.reply(
 		[
 			"Добро пожаловать! \n",
@@ -54,7 +56,6 @@ client.command("start", async ctx => {
 		].join("\n"),
 		{
 			reply_parameters: { message_id: ctx.msgId },
-			message_thread_id: ctx.message?.message_thread_id,
 			parse_mode: "HTML",
 			reply_markup: new InlineKeyboard().add({
 				text: "🔗 • Github",
@@ -75,7 +76,6 @@ client.command("gemini", async ctx => {
 	return ctx
 		.reply("Подождите, ответ генерируется...", {
 			reply_parameters: { message_id: ctx.msgId },
-			message_thread_id: ctx.message?.message_thread_id,
 			reply_markup: {
 				inline_keyboard: [
 					[
