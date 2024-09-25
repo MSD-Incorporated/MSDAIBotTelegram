@@ -124,7 +124,18 @@ client.command("gemini", async ctx => {
 						});
 				})
 				.catch(err => {
-					ctx.api.editMessageText(chat.id, message_id, "Произошла неизвестная ошибка");
+					ctx.api.editMessageText(chat.id, message_id, "Произошла неизвестная ошибка", {
+						reply_markup: {
+							inline_keyboard: [
+								[
+									{
+										text: "Очистить контекст",
+										callback_data: `clear_context_${ctx.from!.id}`,
+									},
+								],
+							],
+						},
+					});
 					console.error(err);
 				});
 		})
