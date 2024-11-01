@@ -9,7 +9,7 @@ config({ path: resolve(process.cwd(), ".env") });
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 const version = process.env.npm_package_version;
-const channelIDs: number[] = [654382771, 946070039, 825720828, 629401289, 1468687523];
+const channelIDs: number[] = [654382771, 946070039, 825720828, 629401289, 1468687523, 1089300340];
 
 const onStart = ({ id, username }: UserFromGetMe) => console.log(`${username} [${id}] started!`);
 
