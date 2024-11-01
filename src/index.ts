@@ -9,7 +9,7 @@ config({ path: resolve(process.cwd(), ".env") });
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 const version = process.env.npm_package_version;
-const channelIDs: number[] = [654382771, 946070039, 825720828, 629401289, 1468687523, 1089300340];
+const userIDs: number[] = [654382771, 946070039, 825720828, 629401289, 1468687523, 1089300340];
 
 const onStart = ({ id, username }: UserFromGetMe) => console.log(`${username} [${id}] started!`);
 
@@ -66,7 +66,7 @@ client.command("start", async ctx => {
 const context: Record<number, { role: "model" | "user"; parts: { text: string }[] }[]> = {};
 
 client.command("gemini", async ctx => {
-	if (!channelIDs.includes(ctx.chatId)) return;
+	if (!userIDs.includes(ctx.from!.id)) return;
 	const args = ctx.msg.text.split(/\s+/).slice(1);
 	if (!args.length) return ctx.reply("Не удалось найти запрос...");
 
