@@ -1,13 +1,13 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { config } from "dotenv";
 import { Bot, InlineKeyboard } from "grammy";
-import type { Message, UserFromGetMe } from "grammy/types";
+import type { UserFromGetMe } from "grammy/types";
 import { resolve } from "path";
 
 config({ path: resolve(process.cwd(), ".env") });
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 const version = process.env.npm_package_version;
 const userIDs: number[] = [654382771, 946070039, 825720828, 629401289, 1468687523, 1089300340];
 
