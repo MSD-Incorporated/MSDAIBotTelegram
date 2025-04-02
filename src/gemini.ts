@@ -9,7 +9,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 const context: Record<number, { role: "model" | "user"; parts: { text: string }[] }[]> = {};
 
-gemini.hears("@masedmsd_ai_bot", async ctx => {
+gemini.hears(/@masedmsd_ai_bot/gm, async ctx => {
 	if (!userIDs.includes(ctx.from!.id)) return;
 
 	const args = ctx.msg.text!.split(/\s+/);
@@ -19,9 +19,6 @@ gemini.hears("@masedmsd_ai_bot", async ctx => {
 	return ctx
 		.reply("Подождите, ответ генерируется...", {
 			reply_parameters: { message_id: ctx.msgId },
-			reply_markup: {
-				inline_keyboard: [[{ text: "Очистить контекст", callback_data: `clear_context_${ctx.from!.id}` }]],
-			},
 		})
 		.then(async ({ chat, message_id }) => {
 			if (!context[ctx.from!.id]) context[ctx.from!.id] = [];
