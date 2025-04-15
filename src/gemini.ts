@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Composer } from "grammy";
+import { Message } from "grammy/types";
 import { parser } from "parser";
 import { userIDs } from "./constants";
 
@@ -8,6 +9,7 @@ export const gemini = new Composer();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 const context: Record<number, { role: "model" | "user"; parts: { text: string }[] }[]> = {};
+const channelID = -1002118873453;
 
 gemini.hears(/@masedmsd_ai_bot/gm, async ctx => {
 	if (!userIDs.includes(ctx.from!.id)) return;
@@ -122,4 +124,28 @@ gemini.callbackQuery(/clear_context_(\d+)/gm, async ctx => {
 	context[id] = [];
 	await ctx.answerCallbackQuery({ text: "Контекст успешно очищен!" });
 	await ctx.editMessageReplyMarkup({ reply_markup: { inline_keyboard: [] } });
+});
+
+gemini.on("message", async (ctx, next) => {
+	await next();
+	console.log(1235);
+
+	if (!ctx.message.forward_origin || (ctx.message?.forward_origin! as Message)?.chat?.id !== channelID) return;
+	console.log(1234);
+
+	const text = ctx.message.text || ctx.message.caption;
+	if (!text) return;
+
+	const prompt =
+		"Подготовь саммари представленного ниже поста Telegram. Объем саммари не должен превышать 8-10 предложений.\n\n" +
+		text;
+
+	await ctx.replyWithChatAction("typing");
+
+	const { response } = await model.generateContent({ contents: [{ parts: [{ text: prompt }], role: "user" }] });
+	const responseText = response.text();
+
+	return ctx.reply(parser(responseText).slice(0, 4090), {
+		parse_mode: "HTML",
+	});
 });

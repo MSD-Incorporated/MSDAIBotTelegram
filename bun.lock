@@ -5,6 +5,7 @@
       "name": "msd_ai_telegram_bot",
       "dependencies": {
         "@google/generative-ai": "^0.24.0",
+        "@roziscoding/grammy-autoquote": "^2.0.8",
         "grammy": "^1.35.0",
       },
       "devDependencies": {
@@ -20,6 +21,8 @@
     "@google/generative-ai": ["@google/generative-ai@0.24.0", "", {}, "sha512-fnEITCGEB7NdX0BhoYZ/cq/7WPZ1QS5IzJJfC3Tg/OwkvBetMiVJciyaan297OvE4B9Jg1xvo0zIazX/9sGu1Q=="],
 
     "@grammyjs/types": ["@grammyjs/types@3.19.0", "", {}, "sha512-N0MS+RJG+AGSNuka1GWVj88oyK1oti4I0eQq6jGo4hic3P9MwFfnHjGQuIExZ3tlJUrZYwC/T7gk4Tu3+guJyg=="],
+
+    "@roziscoding/grammy-autoquote": ["@roziscoding/grammy-autoquote@2.0.8", "", { "peerDependencies": { "grammy": "^1" } }, "sha512-QM5kRuBq6KCHuNQukmNuUSEdKhN5KiSDmW9RuL/fxenBmRBuYRSxTPaxNOsmHAqs2th3bua/Ltg7d24mhkX4Mw=="],
 
     "@types/bun": ["@types/bun@1.2.4", "", { "dependencies": { "bun-types": "1.2.4" } }, "sha512-QtuV5OMR8/rdKJs213iwXDpfVvnskPXY/S0ZiFbsTjQZycuqPbMW8Gf/XhLfwE5njW8sxI2WjISURXPlHypMFA=="],
 

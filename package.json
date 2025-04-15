@@ -18,6 +18,7 @@
 	},
 	"dependencies": {
 		"@google/generative-ai": "^0.24.0",
+		"@roziscoding/grammy-autoquote": "^2.0.8",
 		"grammy": "^1.35.0"
 	},
 	"devDependencies": {

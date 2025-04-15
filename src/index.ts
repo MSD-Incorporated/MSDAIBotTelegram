@@ -1,3 +1,4 @@
+import { autoQuote } from "@roziscoding/grammy-autoquote";
 import { Bot, InlineKeyboard } from "grammy";
 import { onStart, version } from "./constants";
 import { gemini } from "./gemini";
@@ -5,6 +6,7 @@ import { gemini } from "./gemini";
 const client = new Bot(process.env.TOKEN);
 
 client.use(gemini);
+client.use(autoQuote());
 
 client.command("start", async ctx => {
 	console.log(ctx.message);
