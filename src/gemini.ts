@@ -94,7 +94,8 @@ gemini.callbackQuery(/clear_context_(\d+)/gm, async ctx => {
 	await ctx.editMessageReplyMarkup({ reply_markup: { inline_keyboard: [] } });
 });
 
-gemini.on("message", async ctx => {
+gemini.on("message", async (ctx, next) => {
+	await next();
 	if (!ctx.message.forward_origin || (ctx.message?.forward_origin! as Message)?.chat?.id !== channelID) return;
 
 	await ctx.replyWithChatAction("typing");
