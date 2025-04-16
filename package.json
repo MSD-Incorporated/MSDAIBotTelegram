@@ -2,7 +2,7 @@
 	"name": "msd_ai_telegram_bot",
 	"main": "./dist/index.js",
 	"module": "./src/index.ts",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"license": "MIT",
 	"scripts": {
 		"start": "node .",
@@ -19,13 +19,11 @@
 	"dependencies": {
 		"@google/generative-ai": "^0.24.0",
 		"@roziscoding/grammy-autoquote": "^2.0.8",
-		"grammy": "^1.35.0"
+		"grammy": "^1.36.0"
 	},
 	"devDependencies": {
-		"@types/bun": "^1.2.4",
-		"@types/node": "^22.13.9",
-		"prettier": "^3.5.3",
-		"tslib": "^2.8.1",
-		"typescript": "^5.8.2"
+		"@types/bun": "^1.2.9",
+		"@types/node": "^22.14.1",
+		"prettier": "^3.5.3"
 	}
 }
