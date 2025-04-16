@@ -128,10 +128,7 @@ gemini.callbackQuery(/clear_context_(\d+)/gm, async ctx => {
 
 gemini.on("message", async (ctx, next) => {
 	await next();
-	console.log(1235);
-
 	if (!ctx.message.forward_origin || (ctx.message?.forward_origin! as Message)?.chat?.id !== channelID) return;
-	console.log(1234);
 
 	const text = ctx.message.text || ctx.message.caption;
 	if (!text) return;
