@@ -12,7 +12,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 gemini
 	.filter(({ from }) => from !== null && userIDs.includes(from!.id))
-	.filter(({ msg }) => msg?.text?.split(/\s+/).length !== 0)
+	.filter(({ msg }) => msg?.text?.split(/\s+/).length! > 1)
 	.hears(/@masedmsd_ai_bot/gm, async ctx => {
 		await ctx.replyWithChatAction("typing");
 		const args = ctx.msg.text!.split(/\s+/);
@@ -53,7 +53,7 @@ gemini.command("clear_context", async ctx => {
 
 gemini
 	.filter(({ from }) => from !== null && userIDs.includes(from!.id))
-	.filter(({ msg }) => msg?.text?.split(/\s+/).length !== 0)
+	.filter(({ msg }) => msg?.text?.split(/\s+/).length! > 1)
 	.command("gemini", async ctx => {
 		await ctx.replyWithChatAction("typing");
 		const args = ctx.msg.text!.split(/\s+/);
