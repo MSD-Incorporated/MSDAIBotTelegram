@@ -11,7 +11,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 gemini
-	.filter(({ from }) => from !== null && userIDs.includes(from!.id))
+	.filter(({ from }) => from !== undefined && userIDs.includes(from!.id))
 	.filter(({ msg }) => msg?.text?.split(/\s+/).length! > 1)
 	.hears(/@masedmsd_ai_bot/gm, async ctx => {
 		await ctx.replyWithChatAction("typing");
@@ -52,7 +52,7 @@ gemini.command("clear_context", async ctx => {
 });
 
 gemini
-	.filter(({ from }) => from !== null && userIDs.includes(from!.id))
+	.filter(({ from }) => from !== undefined && userIDs.includes(from!.id))
 	.filter(({ msg }) => msg?.text?.split(/\s+/).length! > 1)
 	.command("gemini", async ctx => {
 		await ctx.replyWithChatAction("typing");

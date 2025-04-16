@@ -6,8 +6,8 @@ import { onStart } from "./utils";
 
 const client = new Bot(process.env.TOKEN);
 
-client.use(gemini);
 client.use(autoQuote());
+client.use(gemini);
 
 const text = [
 	"Добро пожаловать! \n",
