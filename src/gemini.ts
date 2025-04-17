@@ -7,6 +7,8 @@ import { channelID, type GeminiContext, userIDs } from "./utils";
 export const gemini = new Composer();
 const inlineQueryContext: Record<number, string> = {};
 const context: Record<number, GeminiContext[]> = {};
+const lengthError =
+	"Произошла неизвестная ошибка. Возможно потому что ответ нейросети был больше, чем лимиты на длину сообщения в Telegram" as const;
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -51,21 +53,13 @@ gemini.chosenInlineResult("gemini", async ctx => {
 		contents: [{ parts: [{ text: ctx.chosenInlineResult.query }], role: "user" }],
 	});
 	const responseText = response.text();
+	const str = parser(responseText).length > 1000 ? parser(responseText).slice(0, 1000) + "..." : parser(responseText);
 
-	return ctx
-		.editMessageText(
-			parser(responseText).length > 1000 ? parser(responseText).slice(0, 1000) + "..." : parser(responseText),
-			{
-				parse_mode: "HTML",
-			}
-		)
-		.catch(err => {
-			ctx.editMessageText(
-				"Произошла неизвестная ошибка. Возможно потому что ответ нейросети был больше, чем лимиты на длину сообщения в Telegram"
-			);
+	return ctx.editMessageText(str, { parse_mode: "HTML" }).catch(err => {
+		ctx.editMessageText(lengthError);
 
-			console.log(err);
-		});
+		console.log(err);
+	});
 });
 
 gemini.callbackQuery("generate", async ctx => {
@@ -80,23 +74,15 @@ gemini.callbackQuery("generate", async ctx => {
 
 	const { response } = await model.generateContent({ contents: [{ parts: [{ text: query }], role: "user" }] });
 	const responseText = response.text();
+	const str = parser(responseText).length > 1000 ? parser(responseText).slice(0, 1000) + "..." : parser(responseText);
 
 	delete inlineQueryContext[ctx.callbackQuery.from.id];
 
-	return ctx
-		.editMessageText(
-			parser(responseText).length > 1000 ? parser(responseText).slice(0, 1000) + "..." : parser(responseText),
-			{
-				parse_mode: "HTML",
-			}
-		)
-		.catch(err => {
-			ctx.editMessageText(
-				"Произошла неизвестная ошибка. Возможно потому что ответ нейросети был больше, чем лимиты на длину сообщения в Telegram"
-			);
+	return ctx.editMessageText(str, { parse_mode: "HTML" }).catch(err => {
+		ctx.editMessageText(lengthError);
 
-			console.log(err);
-		});
+		console.log(err);
+	});
 });
 
 gemini.on("inline_query", ctx => ctx.answerInlineQuery([]));
@@ -127,12 +113,7 @@ gemini
 		context[ctx.from!.id]!.slice(context[ctx.from!.id]!.length - 10, context[ctx.from!.id]!.length);
 
 		return ctx.api.editMessageText(chat.id, message_id, str, { parse_mode: "HTML" }).catch(err => {
-			ctx.api.editMessageText(
-				chat.id,
-				message_id,
-				"Произошла неизвестная ошибка. Возможно потому что ответ нейросети был больше, чем лимиты на длину сообщения в Telegram",
-				{ parse_mode: "HTML" }
-			);
+			ctx.api.editMessageText(chat.id, message_id, lengthError, { parse_mode: "HTML" });
 
 			console.log(err);
 		});
@@ -171,12 +152,7 @@ gemini
 		context[ctx.from!.id]!.slice(context[ctx.from!.id]!.length - 10, context[ctx.from!.id]!.length);
 
 		return ctx.api.editMessageText(chat.id, message_id, str, { parse_mode: "HTML" }).catch(err => {
-			ctx.api.editMessageText(
-				chat.id,
-				message_id,
-				"Произошла неизвестная ошибка. Возможно потому что ответ нейросети был больше, чем лимиты на длину сообщения в Telegram",
-				{ parse_mode: "HTML" }
-			);
+			ctx.api.editMessageText(chat.id, message_id, lengthError, { parse_mode: "HTML" });
 
 			console.log(err);
 		});
