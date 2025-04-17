@@ -52,9 +52,20 @@ gemini.chosenInlineResult("gemini", async ctx => {
 	});
 	const responseText = response.text();
 
-	return ctx.editMessageText(parser(responseText).slice(0, 4090), {
-		parse_mode: "HTML",
-	});
+	return ctx
+		.editMessageText(
+			parser(responseText).length > 1000 ? parser(responseText).slice(0, 1000) + "..." : parser(responseText),
+			{
+				parse_mode: "HTML",
+			}
+		)
+		.catch(err => {
+			ctx.editMessageText(
+				"Произошла неизвестная ошибка. Возможно потому что ответ нейросети был больше, чем лимиты на длину сообщения в Telegram"
+			);
+
+			console.log(err);
+		});
 });
 
 gemini.callbackQuery("generate", async ctx => {
@@ -72,9 +83,20 @@ gemini.callbackQuery("generate", async ctx => {
 
 	delete inlineQueryContext[ctx.callbackQuery.from.id];
 
-	return ctx.editMessageText(parser(responseText).slice(0, 4090), {
-		parse_mode: "HTML",
-	});
+	return ctx
+		.editMessageText(
+			parser(responseText).length > 1000 ? parser(responseText).slice(0, 1000) + "..." : parser(responseText),
+			{
+				parse_mode: "HTML",
+			}
+		)
+		.catch(err => {
+			ctx.editMessageText(
+				"Произошла неизвестная ошибка. Возможно потому что ответ нейросети был больше, чем лимиты на длину сообщения в Telegram"
+			);
+
+			console.log(err);
+		});
 });
 
 gemini.on("inline_query", ctx => ctx.answerInlineQuery([]));
@@ -95,7 +117,10 @@ gemini
 		const GPTMessage = await GPTchat.sendMessage(args.join(" ").replaceAll("@masedmsd_ai_bot", ""));
 
 		const { response } = GPTMessage;
-		const str = parser(response.text()).slice(0, 4090);
+		const str =
+			parser(response.text()).length > 1000
+				? parser(response.text()).slice(0, 1000) + "..."
+				: parser(response.text());
 
 		context[ctx.from!.id]!.push({ role: "user", parts: [{ text: args.join(" ") }] });
 		context[ctx.from!.id]!.push({ role: "model", parts: [{ text: response.text() }] });
@@ -136,7 +161,10 @@ gemini
 		const GPTMessage = await GPTchat.sendMessage(args.join(" ").replaceAll("@masedmsd_ai_bot", ""));
 
 		const { response } = GPTMessage;
-		const str = parser(response.text()).slice(0, 4090);
+		const str =
+			parser(response.text()).length > 1000
+				? parser(response.text()).slice(0, 1000) + "..."
+				: parser(response.text());
 
 		context[ctx.from!.id]!.push({ role: "user", parts: [{ text: args.join(" ") }] });
 		context[ctx.from!.id]!.push({ role: "model", parts: [{ text: response.text() }] });
@@ -177,7 +205,10 @@ gemini.on("message", async (ctx, next) => {
 		text;
 
 	const { response } = await model.generateContent({ contents: [{ parts: [{ text: prompt }], role: "user" }] });
-	const responseText = response.text();
+	const str =
+		parser(response.text()).length > 1000
+			? parser(response.text()).slice(0, 1000) + "..."
+			: parser(response.text());
 
-	return ctx.reply(parser(responseText).slice(0, 4090), { parse_mode: "HTML" });
+	return ctx.reply(str, { parse_mode: "HTML" });
 });
