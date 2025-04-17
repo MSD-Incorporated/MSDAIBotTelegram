@@ -16,7 +16,7 @@ gemini.inlineQuery(/(.*)/gm, async ctx => {
 
 	inlineQueryContext[ctx.inlineQuery.from.id] = ctx.inlineQuery.query;
 
-	await ctx.answerInlineQuery(
+	return ctx.answerInlineQuery(
 		[
 			{
 				id: "gemini",
@@ -114,10 +114,10 @@ gemini
 	});
 
 gemini.command("clear_context", async ctx => {
-	context[ctx.from?.id!] = [];
+	delete context[ctx.from?.id!];
 
 	await ctx.answerCallbackQuery({ text: "Контекст успешно очищен!" });
-	await ctx.editMessageReplyMarkup({ reply_markup: { inline_keyboard: [] } });
+	return ctx.editMessageReplyMarkup({ reply_markup: { inline_keyboard: [] } });
 });
 
 gemini
@@ -158,9 +158,9 @@ gemini.callbackQuery(/clear_context_(\d+)/gm, async ctx => {
 	const id = Number(ctx.callbackQuery.data.slice("clear_context_".length));
 	if (ctx.callbackQuery.from.id !== id) return;
 
-	context[id] = [];
+	delete context[id];
 	await ctx.answerCallbackQuery({ text: "Контекст успешно очищен!" });
-	await ctx.editMessageReplyMarkup({ reply_markup: { inline_keyboard: [] } });
+	return ctx.editMessageReplyMarkup({ reply_markup: { inline_keyboard: [] } });
 });
 
 gemini.on("message", async (ctx, next) => {
