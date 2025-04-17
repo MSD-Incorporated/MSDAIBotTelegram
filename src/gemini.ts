@@ -5,10 +5,79 @@ import { parser } from "parser";
 import { channelID, type GeminiContext, userIDs } from "./utils";
 
 export const gemini = new Composer();
+const inlineQueryContext: Record<number, string> = {};
 const context: Record<number, GeminiContext[]> = {};
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+gemini.inlineQuery(/(.*)/gm, async ctx => {
+	if (ctx.inlineQuery.from.id !== 946070039) return ctx.answerInlineQuery([]);
+
+	inlineQueryContext[ctx.inlineQuery.from.id] = ctx.inlineQuery.query;
+
+	await ctx.answerInlineQuery(
+		[
+			{
+				id: "gemini",
+				type: "article",
+				title: "Gemini AI",
+				description: "Спроси меня о чём-либо!",
+				input_message_content: {
+					message_text: [
+						`⌛ Подождите, ответ генерируется...`,
+						`<b>Запрос:</b>\n<blockquote>${ctx.inlineQuery.query}</blockquote>`,
+					].join("\n\n"),
+					parse_mode: "HTML",
+				},
+				reply_markup: {
+					inline_keyboard: [
+						[
+							{
+								text: "Генерирую... (Нажимайте в чатах)",
+								callback_data: "generate",
+							},
+						],
+					],
+				},
+			},
+		],
+		{ cache_time: 0 }
+	);
+});
+
+gemini.chosenInlineResult("gemini", async ctx => {
+	const { response } = await model.generateContent({
+		contents: [{ parts: [{ text: ctx.chosenInlineResult.query }], role: "user" }],
+	});
+	const responseText = response.text();
+
+	return ctx.editMessageText(parser(responseText).slice(0, 4090), {
+		parse_mode: "HTML",
+	});
+});
+
+gemini.callbackQuery("generate", async ctx => {
+	const query = inlineQueryContext[ctx.callbackQuery.from.id];
+	if (!query)
+		return ctx.answerCallbackQuery({
+			text: "Произошла ошибка, возможно кнопка предназначена не вам!",
+			show_alert: true,
+		});
+
+	await ctx.answerCallbackQuery({ text: "Генерирую...", show_alert: true });
+
+	const { response } = await model.generateContent({ contents: [{ parts: [{ text: query }], role: "user" }] });
+	const responseText = response.text();
+
+	delete inlineQueryContext[ctx.callbackQuery.from.id];
+
+	return ctx.editMessageText(parser(responseText).slice(0, 4090), {
+		parse_mode: "HTML",
+	});
+});
+
+gemini.on("inline_query", ctx => ctx.answerInlineQuery([]));
 
 gemini
 	.filter(({ from }) => from !== undefined && userIDs.includes(from!.id))
