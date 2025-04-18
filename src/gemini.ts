@@ -7,6 +7,8 @@ import { channelID, type GeminiContext, userIDs } from "./utils";
 export const gemini = new Composer();
 const inlineQueryContext: Record<number, string> = {};
 const context: Record<number, GeminiContext[]> = {};
+
+const maxMessageLength = 2048 as const;
 const lengthError =
 	"Произошла неизвестная ошибка. Возможно потому что ответ нейросети был больше, чем лимиты на длину сообщения в Telegram" as const;
 
@@ -53,7 +55,10 @@ gemini.chosenInlineResult("gemini", async ctx => {
 		contents: [{ parts: [{ text: ctx.chosenInlineResult.query }], role: "user" }],
 	});
 	const responseText = response.text();
-	const str = parser(responseText).length > 1000 ? parser(responseText).slice(0, 1000) + "..." : parser(responseText);
+	const str =
+		parser(responseText).length > maxMessageLength - 8
+			? parser(responseText).slice(0, maxMessageLength - 8) + "..."
+			: parser(responseText);
 
 	return ctx.editMessageText(str, { parse_mode: "HTML" }).catch(err => {
 		ctx.editMessageText(lengthError);
@@ -74,7 +79,10 @@ gemini.callbackQuery("generate", async ctx => {
 
 	const { response } = await model.generateContent({ contents: [{ parts: [{ text: query }], role: "user" }] });
 	const responseText = response.text();
-	const str = parser(responseText).length > 1000 ? parser(responseText).slice(0, 1000) + "..." : parser(responseText);
+	const str =
+		parser(responseText).length > maxMessageLength - 8
+			? parser(responseText).slice(0, maxMessageLength - 8) + "..."
+			: parser(responseText);
 
 	delete inlineQueryContext[ctx.callbackQuery.from.id];
 
@@ -104,8 +112,8 @@ gemini
 
 		const { response } = GPTMessage;
 		const str =
-			parser(response.text()).length > 1000
-				? parser(response.text()).slice(0, 1000) + "..."
+			parser(response.text()).length > maxMessageLength - 8
+				? parser(response.text()).slice(0, maxMessageLength - 8) + "..."
 				: parser(response.text());
 
 		context[ctx.from!.id]!.push({ role: "user", parts: [{ text: args.join(" ") }] });
@@ -143,8 +151,8 @@ gemini
 
 		const { response } = GPTMessage;
 		const str =
-			parser(response.text()).length > 1000
-				? parser(response.text()).slice(0, 1000) + "..."
+			parser(response.text()).length > maxMessageLength - 8
+				? parser(response.text()).slice(0, maxMessageLength - 8) + "..."
 				: parser(response.text());
 
 		context[ctx.from!.id]!.push({ role: "user", parts: [{ text: args.join(" ") }] });
@@ -182,8 +190,8 @@ gemini.on("message", async (ctx, next) => {
 
 	const { response } = await model.generateContent({ contents: [{ parts: [{ text: prompt }], role: "user" }] });
 	const str =
-		parser(response.text()).length > 1000
-			? parser(response.text()).slice(0, 1000) + "..."
+		parser(response.text()).length > maxMessageLength - 8
+			? parser(response.text()).slice(0, maxMessageLength - 8) + "..."
 			: parser(response.text());
 
 	return ctx.reply(str, { parse_mode: "HTML" });
