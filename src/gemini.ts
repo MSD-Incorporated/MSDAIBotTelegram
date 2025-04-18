@@ -8,6 +8,12 @@ export const gemini = new Composer();
 const inlineQueryContext: Record<number, string> = {};
 const context: Record<number, GeminiContext[]> = {};
 
+/**
+ * Maximum length of a message in Telegram.
+ *
+ * @see https://core.telegram.org/bots/api#message
+ * @see https://limits.tginfo.me
+ */
 const maxMessageLength = 2048 as const;
 const lengthError =
 	"Произошла неизвестная ошибка. Возможно потому что ответ нейросети был больше, чем лимиты на длину сообщения в Telegram" as const;
@@ -57,7 +63,8 @@ gemini.chosenInlineResult("gemini", async ctx => {
 	const responseText = response.text();
 	const str =
 		parser(responseText).length > maxMessageLength - 8
-			? parser(responseText).slice(0, maxMessageLength - 8) + "..."
+			? parser(response.text()).slice(0, maxMessageLength - 30) +
+				"\n\n<blockquote>Текст слишком длинный</blockquote>"
 			: parser(responseText);
 
 	return ctx.editMessageText(str, { parse_mode: "HTML" }).catch(err => {
@@ -81,7 +88,8 @@ gemini.callbackQuery("generate", async ctx => {
 	const responseText = response.text();
 	const str =
 		parser(responseText).length > maxMessageLength - 8
-			? parser(responseText).slice(0, maxMessageLength - 8) + "..."
+			? parser(responseText).slice(0, maxMessageLength - 30) +
+				"\n\n<blockquote>Текст слишком длинный</blockquote>"
 			: parser(responseText);
 
 	delete inlineQueryContext[ctx.callbackQuery.from.id];
@@ -113,7 +121,8 @@ gemini
 		const { response } = GPTMessage;
 		const str =
 			parser(response.text()).length > maxMessageLength - 8
-				? parser(response.text()).slice(0, maxMessageLength - 8) + "..."
+				? parser(response.text()).slice(0, maxMessageLength - 30) +
+					"\n\n<blockquote>Текст слишком длинный</blockquote>"
 				: parser(response.text());
 
 		context[ctx.from!.id]!.push({ role: "user", parts: [{ text: args.join(" ") }] });
@@ -152,7 +161,8 @@ gemini
 		const { response } = GPTMessage;
 		const str =
 			parser(response.text()).length > maxMessageLength - 8
-				? parser(response.text()).slice(0, maxMessageLength - 8) + "..."
+				? parser(response.text()).slice(0, maxMessageLength - 30) +
+					"\n\n<blockquote>Текст слишком длинный</blockquote>"
 				: parser(response.text());
 
 		context[ctx.from!.id]!.push({ role: "user", parts: [{ text: args.join(" ") }] });
@@ -191,7 +201,8 @@ gemini.on("message", async (ctx, next) => {
 	const { response } = await model.generateContent({ contents: [{ parts: [{ text: prompt }], role: "user" }] });
 	const str =
 		parser(response.text()).length > maxMessageLength - 8
-			? parser(response.text()).slice(0, maxMessageLength - 8) + "..."
+			? parser(response.text()).slice(0, maxMessageLength - 30) +
+				"\n\n<blockquote>Текст слишком длинный</blockquote>"
 			: parser(response.text());
 
 	return ctx.reply(str, { parse_mode: "HTML" });
