@@ -2,21 +2,11 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Composer } from "grammy";
 import type { Message } from "grammy/types";
 import { parser } from "parser";
-import { channelID, type GeminiContext, userIDs } from "./utils";
+import { channelID, type GeminiContext, lengthError, maxMessageLength, userIDs } from "./utils";
 
 export const gemini = new Composer();
 const inlineQueryContext: Record<number, string> = {};
 const context: Record<number, GeminiContext[]> = {};
-
-/**
- * Maximum length of a message in Telegram.
- *
- * @see https://core.telegram.org/bots/api#message
- * @see https://limits.tginfo.me
- */
-const maxMessageLength = 2048 as const;
-const lengthError =
-	"Произошла неизвестная ошибка. Возможно потому что ответ нейросети был больше, чем лимиты на длину сообщения в Telegram" as const;
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
