@@ -5,7 +5,7 @@ import type { UserFromGetMe } from "grammy/types";
  *
  * @constant {readonly number[]}
  */
-export const userIDs: readonly number[] = [654382771, 946070039, 1302930611] as const;
+export const userIDs: readonly number[] = [654382771, 946070039, 1302930611, 1425202813] as const;
 
 /**
  * The channel ID for a specific Telegram channel.
