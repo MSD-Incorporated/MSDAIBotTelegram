@@ -12,7 +12,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 gemini.inlineQuery(/(.*)/gm, async ctx => {
-	if (ctx.inlineQuery.from.id !== 946070039) return ctx.answerInlineQuery([]);
+	if (!userIDs.includes(ctx.inlineQuery.from.id)) return ctx.answerInlineQuery([]);
 
 	inlineQueryContext[ctx.inlineQuery.from.id] = ctx.inlineQuery.query;
 
