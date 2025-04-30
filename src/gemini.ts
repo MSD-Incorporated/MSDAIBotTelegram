@@ -118,7 +118,10 @@ gemini
 
 		context[ctx.from!.id]!.push({ role: "user", parts: [{ text: args.join(" ") }] });
 		context[ctx.from!.id]!.push({ role: "model", parts: [{ text: response.text() }] });
-		context[ctx.from!.id]!.slice(context[ctx.from!.id]!.length - 10, context[ctx.from!.id]!.length);
+		context[ctx.from!.id] = context[ctx.from!.id]!.slice(
+			context[ctx.from!.id]!.length - 10,
+			context[ctx.from!.id]!.length
+		);
 
 		return ctx.api.editMessageText(chat.id, message_id, str, { parse_mode: "HTML" }).catch(err => {
 			ctx.api.editMessageText(chat.id, message_id, lengthError, { parse_mode: "HTML" });
@@ -158,7 +161,10 @@ gemini
 
 		context[ctx.from!.id]!.push({ role: "user", parts: [{ text: args.join(" ") }] });
 		context[ctx.from!.id]!.push({ role: "model", parts: [{ text: response.text() }] });
-		context[ctx.from!.id]!.slice(context[ctx.from!.id]!.length - 10, context[ctx.from!.id]!.length);
+		context[ctx.from!.id] = context[ctx.from!.id]!.slice(
+			context[ctx.from!.id]!.length - 10,
+			context[ctx.from!.id]!.length
+		);
 
 		return ctx.api.editMessageText(chat.id, message_id, str, { parse_mode: "HTML" }).catch(err => {
 			ctx.api.editMessageText(chat.id, message_id, lengthError, { parse_mode: "HTML" });
