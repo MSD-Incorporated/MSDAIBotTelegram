@@ -1,7 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Composer } from "grammy";
 import type { Message } from "grammy/types";
-import { parser } from "parser";
+
+import { parser } from "./parser";
 import { channelID, type GeminiContext, lengthError, maxMessageLength, userIDs } from "./utils";
 
 export const gemini = new Composer();

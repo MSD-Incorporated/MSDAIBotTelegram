@@ -4,7 +4,7 @@ import { version } from "../package.json" with { type: "json" };
 import { gemini } from "./gemini";
 import { onStart } from "./utils";
 
-const client = new Bot(process.env.TOKEN);
+const client = new Bot(process.env.TOKEN, { client: { apiRoot: process.env.LOCAL_API ?? "https://api.telegram.org" } });
 
 client.use(autoQuote());
 client.use(gemini);
