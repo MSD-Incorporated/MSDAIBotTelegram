@@ -3,14 +3,14 @@ import { Composer } from "grammy";
 import type { Message } from "grammy/types";
 
 import { parser } from "./parser";
-import { channelID, type GeminiContext, lengthError, maxMessageLength, userIDs } from "./utils";
+import { channelID, type GeminiContext, lengthError, maxMessageLength, textTooLong, userIDs } from "./utils";
 
 export const gemini = new Composer();
 const inlineQueryContext: Record<number, string> = {};
 const context: Record<number, GeminiContext[]> = {};
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN);
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 gemini.inlineQuery(/(.*)/gm, async ctx => {
 	if (!userIDs.includes(ctx.inlineQuery.from.id)) return ctx.answerInlineQuery([]);
@@ -52,16 +52,17 @@ gemini.chosenInlineResult("gemini", async ctx => {
 		contents: [{ parts: [{ text: ctx.chosenInlineResult.query }], role: "user" }],
 	});
 	const responseText = response.text();
+	const parsedText = parser(responseText);
+
 	const str =
-		parser(responseText).length > maxMessageLength - 8
-			? parser(response.text()).slice(0, maxMessageLength - 30) +
-				"\n\n<blockquote>Текст слишком длинный</blockquote>"
-			: parser(responseText);
+		parsedText.length > maxMessageLength - 8
+			? parsedText.slice(0, maxMessageLength - 30) + `\n\n${textTooLong}`
+			: parsedText;
 
 	return ctx.editMessageText(str, { parse_mode: "HTML" }).catch(err => {
-		ctx.editMessageText(lengthError);
-
 		console.log(err);
+
+		return ctx.editMessageText(lengthError);
 	});
 });
 
@@ -77,18 +78,19 @@ gemini.callbackQuery("generate", async ctx => {
 
 	const { response } = await model.generateContent({ contents: [{ parts: [{ text: query }], role: "user" }] });
 	const responseText = response.text();
+	const parsedText = parser(responseText);
+
 	const str =
-		parser(responseText).length > maxMessageLength - 8
-			? parser(responseText).slice(0, maxMessageLength - 30) +
-				"\n\n<blockquote>Текст слишком длинный</blockquote>"
-			: parser(responseText);
+		parsedText.length > maxMessageLength - 8
+			? parsedText.slice(0, maxMessageLength - 30) + `\n\n${textTooLong}`
+			: parsedText;
 
 	delete inlineQueryContext[ctx.callbackQuery.from.id];
 
 	return ctx.editMessageText(str, { parse_mode: "HTML" }).catch(err => {
-		ctx.editMessageText(lengthError);
-
 		console.log(err);
+
+		return ctx.editMessageText(lengthError);
 	});
 });
 
@@ -110,11 +112,12 @@ gemini
 		const GPTMessage = await GPTchat.sendMessage(args.join(" ").replaceAll("@masedmsd_ai_bot", ""));
 
 		const { response } = GPTMessage;
+		const parsedText = parser(response.text());
+
 		const str =
-			parser(response.text()).length > maxMessageLength - 8
-				? parser(response.text()).slice(0, maxMessageLength - 30) +
-					"\n\n<blockquote>Текст слишком длинный</blockquote>"
-				: parser(response.text());
+			parsedText.length > maxMessageLength - 8
+				? parsedText.slice(0, maxMessageLength - 30) + `\n\n${textTooLong}`
+				: parsedText;
 
 		context[ctx.from!.id]!.push({ role: "user", parts: [{ text: args.join(" ") }] });
 		context[ctx.from!.id]!.push({ role: "model", parts: [{ text: response.text() }] });
@@ -124,9 +127,9 @@ gemini
 		);
 
 		return ctx.api.editMessageText(chat.id, message_id, str, { parse_mode: "HTML" }).catch(err => {
-			ctx.api.editMessageText(chat.id, message_id, lengthError, { parse_mode: "HTML" });
-
 			console.log(err);
+
+			return ctx.api.editMessageText(chat.id, message_id, lengthError, { parse_mode: "HTML" });
 		});
 	});
 
@@ -153,11 +156,12 @@ gemini
 		const GPTMessage = await GPTchat.sendMessage(args.join(" ").replaceAll("@masedmsd_ai_bot", ""));
 
 		const { response } = GPTMessage;
+		const parsedText = parser(response.text());
+
 		const str =
-			parser(response.text()).length > maxMessageLength - 8
-				? parser(response.text()).slice(0, maxMessageLength - 30) +
-					"\n\n<blockquote>Текст слишком длинный</blockquote>"
-				: parser(response.text());
+			parsedText.length > maxMessageLength - 8
+				? parsedText.slice(0, maxMessageLength - 30) + `\n\n${textTooLong}`
+				: parsedText;
 
 		context[ctx.from!.id]!.push({ role: "user", parts: [{ text: args.join(" ") }] });
 		context[ctx.from!.id]!.push({ role: "model", parts: [{ text: response.text() }] });
@@ -167,9 +171,9 @@ gemini
 		);
 
 		return ctx.api.editMessageText(chat.id, message_id, str, { parse_mode: "HTML" }).catch(err => {
-			ctx.api.editMessageText(chat.id, message_id, lengthError, { parse_mode: "HTML" });
+			console.error(err);
 
-			console.log(err);
+			return ctx.api.editMessageText(chat.id, message_id, lengthError, { parse_mode: "HTML" });
 		});
 	});
 
@@ -196,11 +200,12 @@ gemini.on("message", async (ctx, next) => {
 		text;
 
 	const { response } = await model.generateContent({ contents: [{ parts: [{ text: prompt }], role: "user" }] });
+	const parsedText = parser(response.text());
+
 	const str =
-		parser(response.text()).length > maxMessageLength - 8
-			? parser(response.text()).slice(0, maxMessageLength - 30) +
-				"\n\n<blockquote>Текст слишком длинный</blockquote>"
-			: parser(response.text());
+		parsedText.length > maxMessageLength - 8
+			? parsedText.slice(0, maxMessageLength - 30) + `\n\n${textTooLong}`
+			: parsedText;
 
 	return ctx.reply(str, { parse_mode: "HTML" });
 });

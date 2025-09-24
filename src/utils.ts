@@ -33,6 +33,8 @@ export const maxMessageLength = 4096 as const;
 export const lengthError =
 	"Произошла неизвестная ошибка. Возможно потому что ответ нейросети был больше, чем лимиты на длину сообщения в Telegram" as const;
 
+export const textTooLong = "<blockquote>Текст слишком длинный</blockquote>" as const;
+
 /**
  * Logs a message when the bot starts.
  *
