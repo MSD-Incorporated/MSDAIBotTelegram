@@ -13,7 +13,7 @@ const text = [
 	"Добро пожаловать! \n",
 	"Чтобы задать свой вопрос используйте: /gemini <code>[текст запроса]</code>",
 	"Пример: /gemini <code>Привет, как дела?</code> \n",
-	"Версия gemini: <code>gemini-2.0-flash</code>",
+	"Версия gemini: <code>gemini-2.5-flash</code>",
 	`Текущий билд: <code>${version}</code>`,
 ].join("\n");
 
