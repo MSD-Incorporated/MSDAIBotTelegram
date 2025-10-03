@@ -1,6 +1,13 @@
 import type { UserFromGetMe } from "grammy/types";
 
 /**
+ * The version of the gemini model.
+ *
+ * @constant {string}
+ */
+export const geminiVersion = "gemini-2.5-flash" as const;
+
+/**
  * List of allowed user IDs.
  *
  * @constant {readonly number[]}

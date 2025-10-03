@@ -2,7 +2,7 @@ import { autoQuote } from "@roziscoding/grammy-autoquote";
 import { Bot, InlineKeyboard } from "grammy";
 import { version } from "../package.json" with { type: "json" };
 import { gemini } from "./gemini";
-import { onStart } from "./utils";
+import { geminiVersion, onStart } from "./utils";
 
 const client = new Bot(process.env.TOKEN, { client: { apiRoot: process.env.LOCAL_API ?? "https://api.telegram.org" } });
 
@@ -13,7 +13,7 @@ const text = [
 	"Добро пожаловать! \n",
 	"Чтобы задать свой вопрос используйте: /gemini <code>[текст запроса]</code>",
 	"Пример: /gemini <code>Привет, как дела?</code> \n",
-	"Версия gemini: <code>gemini-2.5-flash</code>",
+	`Версия gemini: <code>${geminiVersion}</code>`,
 	`Текущий билд: <code>${version}</code>`,
 ].join("\n");
 

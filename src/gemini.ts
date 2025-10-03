@@ -3,14 +3,22 @@ import { Composer } from "grammy";
 import type { Message } from "grammy/types";
 
 import { parser } from "./parser";
-import { channelID, type GeminiContext, lengthError, maxMessageLength, textTooLong, userIDs } from "./utils";
+import {
+	channelID,
+	type GeminiContext,
+	geminiVersion,
+	lengthError,
+	maxMessageLength,
+	textTooLong,
+	userIDs,
+} from "./utils";
 
 export const gemini = new Composer();
 const inlineQueryContext: Record<number, string> = {};
 const context: Record<number, GeminiContext[]> = {};
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+const model = genAI.getGenerativeModel({ model: geminiVersion });
 
 gemini.inlineQuery(/(.*)/gm, async ctx => {
 	if (!userIDs.includes(ctx.inlineQuery.from.id)) return ctx.answerInlineQuery([]);
