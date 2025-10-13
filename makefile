@@ -1,5 +1,8 @@
+GIT_SHA_FETCH := $(shell git rev-parse HEAD | cut -c 1-8)
+export GIT_SHA=$(GIT_SHA_FETCH)
+
 docker_build_bot:
-	docker build -t mased/msdbot_ai_telegram .
+	docker build -t --build-arg GIT_SHA=$(GIT_SHA) mased/msdbot_ai_telegram
 
 docker_bot_api:
 	docker run \

@@ -1,5 +1,6 @@
 ARG BUN_VERSION="latest"
 ARG ALPINE_VERSION="3.18"
+ARG GIT_COMMIT
 
 # Bun Image
 FROM oven/bun:${BUN_VERSION} AS bun_image
@@ -15,7 +16,7 @@ COPY --from=bun_image /usr/local/bin/bun /usr/local/bin/
 ENV NODE_ENV=production
 
 RUN --mount=type=cache,target=/root/.cache bun --frozen-lockfile install
-RUN bun run build
+RUN bun run build --define GIT_COMMIT=$GIT_COMMIT
 
 # App
 FROM base_image AS app
