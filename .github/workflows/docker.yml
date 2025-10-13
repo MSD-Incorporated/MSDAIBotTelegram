@@ -27,7 +27,7 @@ jobs:
                   password: ${{ secrets.DOCKERHUB_TOKEN }}
 
             - name: Get GitHub SHA
-              run: echo "SHORT_SHA=`git rev-parse --short HEAD`" >> $GITHUB_ENV
+              run: echo "SHA_SHORT=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
 
             - name: Build and push
               uses: docker/build-push-action@v6
@@ -36,4 +36,4 @@ jobs:
                   push: true
                   tags: mased/msdbot_ai_telegram:latest
                   build-args: |
-                      GIT_COMMIT=$GIT_COMMIT
+                      GIT_COMMIT=$SHA_SHORT
