@@ -15,6 +15,8 @@ COPY --from=bun_image /usr/local/bin/bun /usr/local/bin/
 
 ENV NODE_ENV=production
 
+RUN echo ${GIT_COMMIT}
+
 RUN --mount=type=cache,target=/root/.cache bun --frozen-lockfile install
 RUN bun run build --define GIT_COMMIT=${GIT_COMMIT}
 
