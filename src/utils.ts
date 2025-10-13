@@ -8,6 +8,13 @@ import type { UserFromGetMe } from "grammy/types";
 export const geminiVersion = "gemini-2.5-flash" as const;
 
 /**
+ * Username of telegram bot
+ *
+ * @constant {string}
+ */
+export const botUsername = "masedmsd_ai_bot" as const;
+
+/**
  * List of allowed user IDs.
  *
  * @constant {readonly number[]}

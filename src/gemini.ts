@@ -4,6 +4,7 @@ import type { Message } from "grammy/types";
 
 import { parser } from "./parser";
 import {
+	botUsername,
 	channelID,
 	type GeminiContext,
 	geminiVersion,
@@ -40,14 +41,7 @@ gemini.inlineQuery(/(.*)/gm, async ctx => {
 					parse_mode: "HTML",
 				},
 				reply_markup: {
-					inline_keyboard: [
-						[
-							{
-								text: "Генерирую... (Нажимайте в чатах)",
-								callback_data: "generate",
-							},
-						],
-					],
+					inline_keyboard: [[{ text: "Генерирую... (Нажимайте в чатах)", callback_data: "generate" }]],
 				},
 			},
 		],
@@ -117,7 +111,7 @@ gemini
 		if (!userContext) context[ctx.from!.id] = [];
 
 		const GPTchat = model.startChat({ history: userContext });
-		const GPTMessage = await GPTchat.sendMessage(args.join(" ").replaceAll("@masedmsd_ai_bot", ""));
+		const GPTMessage = await GPTchat.sendMessage(args.join(" ").replaceAll(`@${botUsername}`, ""));
 
 		const { response } = GPTMessage;
 		const parsedText = parser(response.text());
@@ -161,7 +155,7 @@ gemini
 		if (!userContext) context[ctx.from!.id] = [];
 
 		const GPTchat = model.startChat({ history: userContext });
-		const GPTMessage = await GPTchat.sendMessage(args.join(" ").replaceAll("@masedmsd_ai_bot", ""));
+		const GPTMessage = await GPTchat.sendMessage(args.join(" ").replaceAll(`@${botUsername}`, ""));
 
 		const { response } = GPTMessage;
 		const parsedText = parser(response.text());

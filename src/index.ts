@@ -14,7 +14,7 @@ const text = [
 	"Чтобы задать свой вопрос используйте: /gemini <code>[текст запроса]</code>",
 	"Пример: /gemini <code>Привет, как дела?</code> \n",
 	`Версия gemini: <code>${geminiVersion}</code>`,
-	`Текущий билд: <code>${version}</code>`,
+	`Текущий билд: <code>${version}</code> [<code>${GIT_COMMIT}</code>]`,
 ].join("\n");
 
 const keyboard = new InlineKeyboard().add({
