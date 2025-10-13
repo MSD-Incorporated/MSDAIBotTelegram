@@ -19,7 +19,7 @@ ENV NODE_ENV=production
 RUN echo "Building with GIT_COMMIT=${GIT_COMMIT}"
 
 RUN --mount=type=cache,target=/root/.cache bun --frozen-lockfile install
-RUN bun run build --define GIT_COMMIT='"${GIT_COMMIT}"'
+RUN bun run build --define GIT_COMMIT="\"${GIT_COMMIT}\""
 
 # App
 FROM base_image AS app
