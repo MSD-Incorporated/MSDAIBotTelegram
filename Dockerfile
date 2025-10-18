@@ -17,7 +17,7 @@ ENV NODE_ENV=production
 
 RUN echo "Building with GIT_COMMIT=${GIT_COMMIT}"
 
-RUN --mount=type=cache,target=/root/.cache bun --frozen-lockfile install
+RUN --mount=type=cache,target=/root/.cache bun install --frozen-lockfile --production --no-cache
 RUN bun run build --define GIT_COMMIT="\"${GIT_COMMIT}\""
 
 # App
@@ -25,10 +25,5 @@ FROM base_image AS app
 WORKDIR /app
 
 COPY --from=build /dist /app
-COPY --from=bun_image /usr/local/bin/bun /usr/local/bin/
-COPY package.json bun.lock ./
 
-ENV NODE_ENV=production
-RUN --mount=type=cache,target=/root/.cache bun --frozen-lockfile --production install
-
-CMD [ "bun", "run", "index.js" ]
+CMD [ "./msdbot_ai_telegram" ]

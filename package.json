@@ -13,17 +13,16 @@
 		"pm2:bun_start": "pm2 start bun --ignore-watch=\"node_modules\" --name \"msdbot_ai_telegram\" -- bun:start",
 		"pm2:restart": "pm2 restart \"msdbot_ai_telegram\"",
 		"pm2:stop": "pm2 stop \"msdbot_ai_telegram\"",
-		"build": "bun build --entrypoint ./src/**.ts --outdir dist --target bun",
+		"build": "bun build --entrypoint ./src/**.ts --compile --outfile dist/msdbot_ai_telegram --target bun-linux-x64",
 		"format": "prettier --write --cache './{.vscode,.github,src,test}/**/*.{mjs,ts,tsx,js,jsx,json,yml,yaml}'"
 	},
 	"dependencies": {
-		"@google/generative-ai": "^0.24.0",
-		"@roziscoding/grammy-autoquote": "^2.0.8",
-		"grammy": "^1.36.0"
+		"@google/generative-ai": "^0.24.1",
+		"grammy": "^1.38.3"
 	},
 	"devDependencies": {
-		"@types/bun": "^1.2.9",
-		"@types/node": "^22.14.1",
-		"prettier": "^3.5.3"
+		"@types/bun": "^1.3.0",
+		"@types/node": "^24.8.1",
+		"prettier": "^3.6.2"
 	}
 }

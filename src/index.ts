@@ -1,6 +1,7 @@
-import { autoQuote } from "@roziscoding/grammy-autoquote";
 import { Bot, InlineKeyboard } from "grammy";
+
 import { version } from "../package.json" with { type: "json" };
+import { autoQuote } from "./auto-quote";
 import { gemini } from "./gemini";
 import { geminiVersion, onStart } from "./utils";
 
