@@ -19,6 +19,6 @@ docker_bot:
 	--name msdbot_ai_telegram \
 	--network msdbot_internal_network \
 	--env-file .env \
-	-m 64m --cpus="0.1" \
+	-m 64m --cpus="0.5" \
 	-e NODE_ENV=production \
 	-d mased/msdbot_ai_telegram
